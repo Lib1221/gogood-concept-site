@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GO GOOD — Natural Hydration Drink</title>
+<meta name="description" content="GO GOOD is a natural hydration drink: sparkling water, real fruit, added vitamins and deep ocean minerals. No added sugars, ever.">
+<meta property="og:title" content="GO GOOD — Natural Hydration Drink">
+<meta property="og:description" content="Sparkling water, real fruit, vitamins and deep ocean minerals. No added sugars, ever.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="frames/frame_018.jpg">
+<meta name="theme-color" content="#0b0d10">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230b0d10'/%3E%3Ctext x='50' y='68' font-family='Arial Black,sans-serif' font-size='52' font-weight='900' fill='%23c8f04f' text-anchor='middle'%3EG%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0b0d10;
+    --bone:#f3efe6;
+    --lime:#c8f04f;
+    --berry:#e0417c;
+    --orange:#e8722a;
+    --apple:#7dc242;
+    --hairline:rgba(243,239,230,0.15);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    .flavour,.cta-btn{transition:none;}
+  }
+  body{
+    background:var(--ink);
+    color:var(--bone);
+    font-family:'Inter',sans-serif;
+    overflow-x:hidden;
+  }
+  ::selection{background:var(--lime);color:var(--ink);}
+  .mono{font-family:'IBM Plex Mono',monospace;letter-spacing:0.04em;}
+  .display{font-family:'Anton',sans-serif;text-transform:uppercase;}
+
+  /* ── NAV ─────────────────────────────────────── */
+  nav{
+    position:fixed;top:0;left:0;right:0;
+    display:flex;justify-content:space-between;align-items:center;
+    padding:22px 40px;
+    z-index:50;
+    mix-blend-mode:difference;
+    color:#fff;
+  }
+  nav .word{font-family:'Anton',sans-serif;font-size:20px;letter-spacing:0.02em;}
+  nav .links{display:flex;gap:28px;}
+  nav .links a{
+    font-family:'IBM Plex Mono',monospace;font-size:11px;
+    letter-spacing:0.18em;color:#fff;text-decoration:none;opacity:0.8;
+  }
+  nav .links a:hover{opacity:1;}
+
+  /* ── HERO / SCROLL FILM ──────────────────────── */
+  .hero-driver{height:1100vh;position:relative;}
+  .hero-pin{
+    position:sticky;top:0;
+    height:100vh;
+    overflow:hidden;
+    background:var(--ink);
+  }
+  #productCanvas{
+    position:absolute;inset:0;
+    width:100%;height:100%;
+    display:block;
+  }
+  .hero-pin::after{
+    content:'';
+    position:absolute;inset:0;
+    pointer-events:none;
+    background:
+      linear-gradient(to bottom, rgba(11,13,16,0.4) 0%, rgba(11,13,16,0) 20%),
+      linear-gradient(to top, rgba(11,13,16,0.45) 0%, rgba(11,13,16,0) 22%);
+    z-index:5;
+  }
+
+  .hero-overlay{
+    position:absolute;inset:0;
+    display:flex;flex-direction:column;justify-content:space-between;
+    padding:92px 40px 44px;
+    pointer-events:none;
+    z-index:10;
+  }
+  .spec-readout{font-family:'IBM Plex Mono',monospace;font-size:12px;line-height:1.9;}
+  .spec-readout .row{display:flex;gap:14px;align-items:baseline;}
+  .spec-readout .label{opacity:0.55;width:96px;letter-spacing:0.08em;}
+  .spec-readout .value{color:var(--lime);letter-spacing:0.06em;}
+  .rec-dot{
+    display:inline-block;width:8px;height:8px;border-radius:50%;
+    background:var(--berry);margin-right:8px;
+  }
+  .bottom-row{display:flex;justify-content:space-between;align-items:flex-end;}
+  .scroll-hint{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.2em;opacity:0.7;}
+  #progressPct{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.2em;color:var(--lime);}
+
+  .progress-track{
+    position:absolute;right:18px;top:50%;
+    transform:translateY(-50%);
+    width:2px;height:220px;
+    background:rgba(243,239,230,0.15);
+    z-index:10;
+  }
+  .progress-fill{width:100%;height:0%;position:absolute;top:0;left:0;background:var(--lime);}
+
+  /* ── LOADER ──────────────────────────────────── */
+  .loader{
+    position:absolute;inset:0;
+    display:flex;flex-direction:column;justify-content:center;align-items:center;
+    gap:22px;
+    background:var(--ink);
+    z-index:20;
+    transition:opacity .6s ease;
+  }
+  .loader.done{opacity:0;pointer-events:none;}
+  .loader .word{font-family:'Anton',sans-serif;font-size:clamp(40px,7vw,84px);text-transform:uppercase;color:var(--bone);line-height:0.92;text-align:center;}
+  .loader .word em{font-style:normal;color:var(--lime);}
+  .loader .bar{width:min(320px,60vw);height:2px;background:rgba(243,239,230,0.15);position:relative;overflow:hidden;}
+  .loader .bar i{position:absolute;top:0;left:0;height:100%;width:0%;background:var(--lime);transition:width .2s ease;}
+  .loader .pct{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.22em;color:rgba(243,239,230,0.6);}
+
+  /* ── FILM CAPTIONS ───────────────────────────── */
+  .caption{
+    position:absolute;top:0;left:0;right:0;bottom:0;
+    display:flex;align-items:center;
+    padding:0 6vw;
+    z-index:8;
+    pointer-events:none;
+    opacity:0;
+    transition:none;
+  }
+  .caption .block{max-width:520px;}
+  .caption.right{justify-content:flex-end;text-align:right;}
+  .caption.left{justify-content:flex-start;text-align:left;}
+  .caption .kicker{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;letter-spacing:0.28em;
+    color:var(--lime);
+    margin-bottom:16px;
+    text-shadow:0 1px 14px rgba(11,13,16,0.5);
+  }
+  .caption h3{
+    font-family:'Anton',sans-serif;text-transform:uppercase;
+    font-size:clamp(44px,7.5vw,110px);
+    line-height:0.92;color:#fff;
+    text-shadow:0 4px 40px rgba(11,13,16,0.45);
+  }
+  .caption p{
+    margin-top:18px;
+    font-size:16px;line-height:1.65;font-weight:500;
+    color:rgba(255,255,255,0.92);
+    text-shadow:0 2px 18px rgba(11,13,16,0.55);
+    max-width:380px;
+  }
+  .caption.right p{margin-left:auto;}
+
+  /* split caption: text on both edges, nothing in the middle */
+  .caption.split{justify-content:space-between;align-items:center;}
+  .caption.split .block{max-width:34vw;}
+  .caption.split .block.b-right{text-align:right;}
+  .caption.split .block.b-right p{margin-left:auto;}
+
+  /* ── EDITORIAL ───────────────────────────────── */
+  section{padding:150px 40px;max-width:1240px;margin:0 auto;}
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;letter-spacing:0.25em;
+    color:var(--lime);margin-bottom:22px;
+  }
+  h2.display{font-size:clamp(40px,6.5vw,84px);line-height:0.92;}
+  .lede{
+    font-size:18px;line-height:1.75;color:rgba(243,239,230,0.82);
+    max-width:560px;margin-top:34px;
+  }
+
+  /* stats */
+  .stat-row{
+    display:grid;grid-template-columns:repeat(3,1fr);
+    gap:1px;background:var(--hairline);
+    border:1px solid var(--hairline);
+    margin-top:70px;
+  }
+  .stat{background:var(--ink);padding:36px 30px;}
+  .stat .num{font-family:'Anton',sans-serif;font-size:44px;color:var(--lime);}
+  .stat .cap{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.14em;opacity:0.6;margin-top:10px;line-height:1.7;}
+
+  /* flavours */
+  .flavour-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-top:70px;}
+  .flavour{
+    border:1px solid var(--hairline);
+    overflow:hidden;border-radius:6px;
+    background:#101318;
+    transition:transform .3s ease;
+  }
+  .flavour:hover{transform:translateY(-6px);}
+  .flavour img{width:100%;aspect-ratio:16/11;object-fit:cover;display:block;}
+  .flavour .body{padding:26px 24px 30px;}
+  .flavour h4{font-family:'Anton',sans-serif;text-transform:uppercase;font-size:26px;letter-spacing:0.01em;}
+  .flavour h4 span{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:10px;}
+  .flavour p{margin-top:12px;font-size:14.5px;line-height:1.7;color:rgba(243,239,230,0.72);}
+  .flavour .tagline{
+    font-family:'IBM Plex Mono',monospace;font-size:11px;
+    letter-spacing:0.16em;margin-top:18px;opacity:0.55;
+  }
+
+  /* inside */
+  .inside-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:80px;align-items:start;margin-top:10px;}
+  .spec-list{display:flex;flex-direction:column;margin-top:40px;}
+  .spec-row{
+    display:flex;justify-content:space-between;align-items:baseline;
+    padding:18px 0;border-top:1px solid var(--hairline);
+    font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:0.05em;
+  }
+  .spec-row:last-child{border-bottom:1px solid var(--hairline);}
+  .spec-row .part{color:rgba(243,239,230,0.5);}
+  .spec-row .spec{color:var(--bone);text-align:right;}
+  .spec-row .spec.hot{color:var(--berry);}
+  .inside-copy p{font-size:16.5px;line-height:1.8;color:rgba(243,239,230,0.8);margin-bottom:26px;}
+
+  /* ritual */
+  .ritual-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-top:70px;}
+  .step{border-top:2px solid var(--lime);padding-top:24px;}
+  .step .n{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.2em;color:var(--lime);}
+  .step h5{font-family:'Anton',sans-serif;text-transform:uppercase;font-size:24px;margin-top:14px;}
+  .step p{margin-top:12px;font-size:14.5px;line-height:1.7;color:rgba(243,239,230,0.72);}
+
+  /* ── FOOTER ──────────────────────────────────── */
+  footer{padding:140px 40px 60px;border-top:1px solid var(--hairline);}
+  .footer-inner{
+    max-width:1240px;margin:0 auto;
+    display:flex;justify-content:space-between;align-items:flex-end;
+    flex-wrap:wrap;gap:48px;
+  }
+  footer .cta-word{font-size:clamp(48px,9vw,130px);line-height:0.88;}
+  .cta-btn{
+    font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:0.12em;
+    background:var(--lime);color:var(--ink);
+    padding:18px 32px;border-radius:999px;
+    border:none;cursor:pointer;white-space:nowrap;
+    transition:transform .15s ease;
+  }
+  .cta-btn:hover{transform:scale(1.04);}
+  footer .fine{
+    font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;
+    opacity:0.4;line-height:1.8;
+    margin:60px auto 0;max-width:1240px;
+  }
+
+  @media (max-width:860px){
+    nav{padding:18px 20px;}
+    nav .links{display:none;}
+    .hero-overlay{padding:80px 20px 34px;}
+    .caption{padding:0 20px;}
+    .caption h3{font-size:clamp(34px,11vw,64px);}
+    .caption p{font-size:14px;}
+    .caption.split .block{max-width:44vw;}
+    section{padding:100px 20px;}
+    .stat-row,.flavour-grid,.ritual-steps{grid-template-columns:1fr;}
+    .inside-grid{grid-template-columns:1fr;gap:40px;}
+    footer{padding:100px 20px 48px;}
+    .progress-track{right:10px;height:160px;}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="word">GO GOOD</div>
+  <div class="links">
+    <a href="#film">FILM</a>
+    <a href="#flavours">FLAVOURS</a>
+    <a href="#inside">INSIDE</a>
+    <a href="#shop">SHOP</a>
+  </div>
+</nav>
+
+<!-- ── HERO: scroll-scrubbed film with frame-locked captions ── -->
+<div class="hero-driver" id="heroDriver">
+  <div class="hero-pin" id="film">
+    <canvas id="productCanvas"></canvas>
+
+    <!-- captions are shown/hidden by frame number -->
+    <div class="caption right" data-start="13" data-end="21">
+      <div class="block">
+        <div class="kicker">01 — THE CAN</div>
+        <h3>Good,<br>on the go.</h3>
+        <p>No added sugars. Nothing artificial. A natural hydration drink that fits in one hand.</p>
+      </div>
+    </div>
+
+    <div class="caption split" data-start="25" data-end="33">
+      <div class="block">
+        <div class="kicker">02 — FLAVOUR / 01</div>
+        <h3>Berry</h3>
+        <p>Wild berries pressed into soft bubbles.</p>
+      </div>
+      <div class="block b-right">
+        <div class="kicker">ZERO ADDED SUGAR</div>
+        <h3>Blast</h3>
+        <p>Sweetness from fruit — nowhere else.</p>
+      </div>
+    </div>
+
+    <div class="caption left" data-start="36" data-end="43">
+      <div class="block">
+        <div class="kicker">03 — FLAVOUR / 02</div>
+        <h3>Apple<br>Twist.</h3>
+        <p>Crisp green apple, with added vitamins and deep ocean minerals in every can.</p>
+      </div>
+    </div>
+
+    <div class="caption left" data-start="45" data-end="54">
+      <div class="block">
+        <div class="kicker">04 — FLAVOUR / 03</div>
+        <h3>Orange<br>Fusion.</h3>
+        <p>Sun-ripe citrus, caught mid-air. Real fruit slices, real fizz.</p>
+      </div>
+    </div>
+
+    <div class="caption right" data-start="104" data-end="116">
+      <div class="block">
+        <div class="kicker">05 — THE RITUAL</div>
+        <h3>Crack.<br>Pour.</h3>
+        <p>Berry Blast over a glass of fresh ice. That's the whole recipe.</p>
+      </div>
+    </div>
+
+    <div class="caption left" data-start="129" data-end="140">
+      <div class="block">
+        <div class="kicker">06 — THE FILL</div>
+        <h3>Liquid<br>gold.</h3>
+        <p>Orange Fusion rising over ice — colour from fruit, not from syrup.</p>
+      </div>
+    </div>
+
+    <div class="caption right" data-start="142" data-end="152">
+      <div class="block">
+        <div class="kicker">07 — TWO SIDES</div>
+        <h3>One can,<br>two moods.</h3>
+        <p>Berry below, citrus on top. Every pour is a split screen.</p>
+      </div>
+    </div>
+
+    <div class="caption left" data-start="156" data-end="170">
+      <div class="block">
+        <div class="kicker">08 — THE FAMILY</div>
+        <h3>Three<br>flavours.</h3>
+        <p>Berry Blast, Apple Twist, Orange Fusion — built on real fruit, vitamins and deep ocean minerals.</p>
+      </div>
+    </div>
+
+    <div class="hero-overlay">
+      <div class="spec-readout">
+        <div class="row"><span class="label">PRODUCT</span><span class="value">GO GOOD — NATURAL HYDRATION</span></div>
+        <div class="row"><span class="label">FRAME</span><span class="value" id="frameCount">001 / 198</span></div>
+        <div class="row"><span class="label">STATUS</span><span class="value"><span class="rec-dot"></span>SCRUB</span></div>
+      </div>
+      <div class="bottom-row">
+        <div class="scroll-hint">SCROLL SLOWLY TO PLAY</div>
+        <div id="progressPct">0%</div>
+      </div>
+    </div>
+
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+
+    <div class="loader" id="loader" aria-hidden="true">
+      <div class="word">Go on.<br><em>Go good.</em></div>
+      <div class="bar"><i id="loaderBar"></i></div>
+      <div class="pct" id="loaderPct">LOADING — 0%</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── 01 THE PROMISE ── -->
+<section>
+  <div class="eyebrow">01 — THE PROMISE</div>
+  <h2 class="display">Hydration that<br>actually helps.</h2>
+  <p class="lede">GO GOOD is a natural hydration drink: lightly sparkling water, real fruit, added vitamins and deep ocean minerals. No added sugars, ever — the sweetness you taste is the fruit's own.</p>
+  <div class="stat-row">
+    <div class="stat"><div class="num">0g</div><div class="cap">ADDED SUGAR — SWEETNESS COMES FROM REAL FRUIT ONLY</div></div>
+    <div class="stat"><div class="num">3</div><div class="cap">FLAVOURS — BERRY BLAST, APPLE TWIST, ORANGE FUSION</div></div>
+    <div class="stat"><div class="num">+</div><div class="cap">ADDED VITAMINS &amp; DEEP OCEAN MINERALS IN EVERY CAN</div></div>
+  </div>
+</section>
+
+<!-- ── 02 FLAVOURS ── -->
+<section id="flavours">
+  <div class="eyebrow">02 — THE FLAVOURS</div>
+  <h2 class="display">Pick your good.</h2>
+  <div class="flavour-grid">
+    <div class="flavour">
+      <picture>
+        <source srcset="frames/frame_018.webp" type="image/webp">
+        <img src="frames/frame_018.jpg" alt="Berry Blast can on an orange backdrop" loading="lazy">
+      </picture>
+      <div class="body">
+        <h4><span style="background:var(--berry)"></span>Berry Blast</h4>
+        <p>Wild berries and soft sparkling water. Deep, jammy fruit up front, a clean dry finish — and not a gram of added sugar behind it.</p>
+        <div class="tagline">BEST SERVED: ICE-COLD, STRAIGHT FROM THE CAN</div>
+      </div>
+    </div>
+    <div class="flavour">
+      <picture>
+        <source srcset="frames/frame_040.webp" type="image/webp">
+        <img src="frames/frame_040.jpg" alt="Apple Twist can on a green backdrop" loading="lazy">
+      </picture>
+      <div class="body">
+        <h4><span style="background:var(--apple)"></span>Apple Twist</h4>
+        <p>Crisp green apple with a twist of lime. Bright, orchard-fresh and lightly carbonated — the one you reach for at lunch.</p>
+        <div class="tagline">BEST SERVED: OVER ICE WITH A SLICE OF APPLE</div>
+      </div>
+    </div>
+    <div class="flavour">
+      <picture>
+        <source srcset="frames/frame_048.webp" type="image/webp">
+        <img src="frames/frame_048.jpg" alt="Orange Fusion can tumbling with orange slices" loading="lazy">
+      </picture>
+      <div class="body">
+        <h4><span style="background:var(--orange)"></span>Orange Fusion</h4>
+        <p>Sun-ripe oranges pressed into every drop. Golden, zesty and full-bodied — sunshine with bubbles in it.</p>
+        <div class="tagline">BEST SERVED: TALL GLASS, LOTS OF ICE</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 03 INSIDE ── -->
+<section id="inside">
+  <div class="eyebrow">03 — WHAT'S INSIDE</div>
+  <div class="inside-grid">
+    <div>
+      <h2 class="display">Only the<br>good stuff.</h2>
+      <div class="spec-list">
+        <div class="spec-row"><span class="part">BASE</span><span class="spec">SPARKLING SPRING WATER</span></div>
+        <div class="spec-row"><span class="part">FRUIT</span><span class="spec">REAL PRESSED JUICE</span></div>
+        <div class="spec-row"><span class="part">VITAMINS</span><span class="spec">B-COMPLEX + C, ADDED</span></div>
+        <div class="spec-row"><span class="part">MINERALS</span><span class="spec">DEEP OCEAN SOURCE</span></div>
+        <div class="spec-row"><span class="part">ADDED SUGAR</span><span class="spec hot">NONE — EVER</span></div>
+        <div class="spec-row"><span class="part">SWEETENERS</span><span class="spec hot">NONE ARTIFICIAL</span></div>
+      </div>
+    </div>
+    <div class="inside-copy" style="padding-top:14px;">
+      <p>Most soft drinks start with sugar and work backwards. We start with water — lightly sparkling spring water — and add pressed fruit for taste, a B-vitamin complex for energy metabolism, and minerals drawn from deep ocean water for everyday hydration.</p>
+      <p>That's the whole ingredients story. Nothing to hide, so the can says it out loud: <em>natural hydration drink, no added sugars, good on the go.</em></p>
+    </div>
+  </div>
+</section>
+
+<!-- ── 04 THE RITUAL ── -->
+<section>
+  <div class="eyebrow">04 — HOW TO GO GOOD</div>
+  <h2 class="display">Three moves.</h2>
+  <div class="ritual-steps">
+    <div class="step">
+      <div class="n">STEP / 01</div>
+      <h5>Chill it</h5>
+      <p>Fridge-cold is good. Buried in ice is better. GO GOOD is built to be drunk cold, when the bubbles are at their sharpest.</p>
+    </div>
+    <div class="step">
+      <div class="n">STEP / 02</div>
+      <h5>Crack &amp; pour</h5>
+      <p>Straight from the can works anywhere. Got a glass and ice? Pour slow and watch the colour rise — no syrup, just fruit.</p>
+    </div>
+    <div class="step">
+      <div class="n">STEP / 03</div>
+      <h5>Go</h5>
+      <p>Desk, trail, gym, train. One can, no crash — hydration with vitamins and minerals that travels as fast as you do.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer id="shop">
+  <div class="footer-inner">
+    <div class="cta-word display">Go on.<br>Go good.</div>
+    <button class="cta-btn">SHOP GO GOOD →</button>
+  </div>
+  <div class="fine">GO GOOD — concept microsite. Scroll-based cinematic playback demo; all motion is user-controlled. Product copy is illustrative concept copy based on the film.</div>
+</footer>
+
+<script>
+  const driver = document.getElementById('heroDriver');
+  const canvas = document.getElementById('productCanvas');
+  const ctx = canvas.getContext('2d');
+  const progressFill = document.getElementById('progressFill');
+  const progressPct = document.getElementById('progressPct');
+  const frameCount = document.getElementById('frameCount');
+  const loader = document.getElementById('loader');
+  const loaderBar = document.getElementById('loaderBar');
+  const loaderPct = document.getElementById('loaderPct');
+  const captions = Array.from(document.querySelectorAll('.caption')).map(el => ({
+    el,
+    start: Number(el.dataset.start),
+    end: Number(el.dataset.end)
+  }));
+
+  const FRAME_COUNT = 198;
+  const FADE = 3.5;            // caption fade span, in frames
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const coarsePointer = window.matchMedia('(pointer: coarse)').matches;
+  // snap instantly for reduced motion; ease a touch faster on touch screens
+  const EASE = reducedMotion ? 1 : (coarsePointer ? 0.12 : 0.085);
+
+  // webp with jpg fallback
+  const supportsWebP = document.createElement('canvas')
+    .toDataURL('image/webp').indexOf('data:image/webp') === 0;
+  const EXT = supportsWebP ? 'webp' : 'jpg';
+
+  const frames = [];
+  let drawnFrame = -1;         // frame currently on canvas
+  let smoothFrame = 0;         // eased playhead
+  let targetFrame = 0;         // scroll-driven playhead
+
+  function frameSrc(i){
+    return `frames/frame_${String(i + 1).padStart(3, '0')}.${EXT}`;
+  }
+
+  // ── prioritized preload ─────────────────────────
+  // pass 1: every 4th frame (the "critical set" — enough to scrub anywhere),
+  // pass 2: the rest, filled in the background.
+  const CRITICAL_STEP = 4;
+  const criticalSet = [];
+  const restSet = [];
+  for (let i = 0; i < FRAME_COUNT; i++){
+    frames.push(null);
+    (i % CRITICAL_STEP === 0 || i === FRAME_COUNT - 1 ? criticalSet : restSet).push(i);
+  }
+
+  let criticalLoaded = 0;
+  let loaderDismissed = false;
+
+  function dismissLoader(){
+    if (loaderDismissed) return;
+    loaderDismissed = true;
+    loader.classList.add('done');
+    setTimeout(() => loader.remove(), 700);
+  }
+
+  function loadFrame(i, onDone){
+    const img = new Image();
+    img.onload = img.onerror = () => {
+      if (drawnFrame === -1 && i === 0){ sizeCanvas(); drawFrame(0, true); }
+      onDone && onDone();
+    };
+    img.src = frameSrc(i);
+    frames[i] = img;
+  }
+
+  function onCriticalLoaded(){
+    criticalLoaded++;
+    const pct = Math.round(criticalLoaded / criticalSet.length * 100);
+    loaderBar.style.width = pct + '%';
+    loaderPct.textContent = 'LOADING — ' + pct + '%';
+    if (criticalLoaded >= criticalSet.length){
+      dismissLoader();
+      restSet.forEach(i => loadFrame(i));   // fill in the gaps quietly
+    }
+  }
+
+  criticalSet.forEach(i => loadFrame(i, onCriticalLoaded));
+  setTimeout(dismissLoader, 8000);          // never trap the user on the loader
+
+  function isReady(img){
+    return img && img.complete && img.naturalWidth > 0;
+  }
+
+  // nearest loaded frame, so fast scrubbing never leaves a stale canvas
+  function nearestLoaded(index){
+    if (isReady(frames[index])) return index;
+    for (let d = 1; d < FRAME_COUNT; d++){
+      if (index - d >= 0 && isReady(frames[index - d])) return index - d;
+      if (index + d < FRAME_COUNT && isReady(frames[index + d])) return index + d;
+    }
+    return -1;
+  }
+
+  function sizeCanvas(){
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.round(window.innerWidth * dpr);
+    canvas.height = Math.round(window.innerHeight * dpr);
+  }
+
+  function drawFrame(index, force){
+    index = Math.max(0, Math.min(FRAME_COUNT - 1, index));
+    index = nearestLoaded(index);
+    if (index === -1) return;
+    if (index === drawnFrame && !force) return;
+    const img = frames[index];
+    drawnFrame = index;
+    const cw = canvas.width, ch = canvas.height;
+    const scale = Math.max(cw / img.naturalWidth, ch / img.naturalHeight);
+    const dw = img.naturalWidth * scale;
+    const dh = img.naturalHeight * scale;
+    ctx.drawImage(img, (cw - dw) / 2, (ch - dh) / 2, dw, dh);
+  }
+
+  function updateCaptions(f){
+    for (const c of captions){
+      const fadeIn  = (f - (c.start - FADE)) / FADE;
+      const fadeOut = ((c.end + FADE) - f) / FADE;
+      const o = Math.max(0, Math.min(1, fadeIn, fadeOut));
+      c.el.style.opacity = o.toFixed(3);
+      c.el.style.visibility = o > 0.01 ? 'visible' : 'hidden';
+    }
+  }
+
+  function readScroll(){
+    const rect = driver.getBoundingClientRect();
+    const total = rect.height - window.innerHeight;
+    const progress = total > 0 ? Math.max(0, Math.min(1, -rect.top / total)) : 0;
+    targetFrame = progress * (FRAME_COUNT - 1);
+    progressFill.style.height = (progress * 100) + '%';
+    progressPct.textContent = Math.round(progress * 100) + '%';
+  }
+
+  // eased playback loop: the canvas glides toward the scroll position,
+  // so frames (and backgrounds) change gently instead of snapping
+  function tick(){
+    smoothFrame += (targetFrame - smoothFrame) * EASE;
+    if (Math.abs(targetFrame - smoothFrame) < 0.01) smoothFrame = targetFrame;
+    const index = Math.round(smoothFrame);
+    drawFrame(index);
+    updateCaptions(smoothFrame + 1); // captions use 1-based frame numbers
+    frameCount.textContent = String(index + 1).padStart(3, '0') + ' / ' + FRAME_COUNT;
+    requestAnimationFrame(tick);
+  }
+
+  window.addEventListener('scroll', readScroll, { passive: true });
+  window.addEventListener('resize', () => {
+    sizeCanvas();
+    drawFrame(drawnFrame === -1 ? 0 : drawnFrame, true);
+    readScroll();
+  });
+
+  sizeCanvas();
+  readScroll();
+  smoothFrame = targetFrame;
+  updateCaptions(smoothFrame + 1);
+  requestAnimationFrame(tick);
+</script>
+
+</body>
+</html>
