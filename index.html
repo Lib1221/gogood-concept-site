@@ -502,8 +502,9 @@
   const FADE = 3.5;            // caption fade span, in frames
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const coarsePointer = window.matchMedia('(pointer: coarse)').matches;
-  // snap instantly for reduced motion; ease a touch faster on touch screens
-  const EASE = reducedMotion ? 1 : (coarsePointer ? 0.12 : 0.085);
+  // snap instantly for reduced motion; keep enough ease elsewhere to smooth
+  // out mouse-wheel/trackpad jitter without the frame visibly lagging scroll
+  const EASE = reducedMotion ? 1 : (coarsePointer ? 0.35 : 0.28);
 
   // webp with jpg fallback
   const supportsWebP = document.createElement('canvas')
@@ -522,7 +523,7 @@
   // ── prioritized preload ─────────────────────────
   // pass 1: every 4th frame (the "critical set" — enough to scrub anywhere),
   // pass 2: the rest, filled in the background.
-  const CRITICAL_STEP = 4;
+  const CRITICAL_STEP = 2;
   const criticalSet = [];
   const restSet = [];
   for (let i = 0; i < FRAME_COUNT; i++){
