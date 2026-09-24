@@ -1,1 +1,9 @@
 .claude/settings.local.json
+
+# Added: common build, cache, secret and editor files
+.DS_Store
+.vscode/
+.idea/
+*.zip
+.claude/
+node_modules/
